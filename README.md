@@ -189,8 +189,8 @@ First, functions will be addressed in order to understand the modes inputs and o
 			Rover.yawref = wrap_angle_180(Rover.nyaw - Rover.unstick_angle) 
 			Rover.mode = 'unsticking'
 		return Rover
-		```
-		
+	```
+	
 	+ **Checking looping** `check_looping(Rover)`. The structure of this function is quite similar to the previous one, however, in this case, the yaw reference is computed
 	depending on the way that the rover is turning.
 	```
