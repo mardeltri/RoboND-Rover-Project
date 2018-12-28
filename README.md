@@ -49,15 +49,55 @@ def perspect_transform(img, src, dst):
     return warped, mask
 ```
 
-With the provided data:
+With provided data:
 ![alt text][image1]
+
 With recorded data:
 ![alt text][image2]
 
-With those images we can apply a filter to detect navigable and non-navigable terrain and rock samples.
+With those images we can apply a filter to detect navigable and non-navigable terrain. Threshold of RGB > 160 
+is found to perform well in terms of determing navigable terrain. A new function has been defined to detect non-navigable terrain. The method used here is similar to that in 
+`color_thresh` but we set zero values when the pixel are above all three threshold values. In addition, the mask previously mentioned must be applied given that the perspective
+view does not extend to the whole image.
+```
+def obstacle_thresh(img, mask, rgb_thresh=(160, 160, 160)):
+    # Create an array of ones same xy size as img, but single channel
+    color_unselect = np.ones_like(img[:,:,0])
+    # Require that each pixel be above all three threshold values in RGB
+    # above_thresh will now contain a boolean array with "False"
+    # where threshold was met
+    above_thresh = (img[:,:,0] > rgb_thresh[0]) \
+                & (img[:,:,1] > rgb_thresh[1]) \
+                & (img[:,:,2] > rgb_thresh[2])
+    # Index the array of ones with the boolean array and set to 0
+    color_unselect[above_thresh] = 0
+    # Apply perspective mask
+    obstacle_area = np.float32(color_unselect*mask)
+	# Return the binary image
+    return obstacle_area
+```
+With provided data:
 ![alt text][image3]
+With recorded data:
 ![alt text][image4]
+
+Rock samples are detected applying a filter to find yellow colors. Function `color_thresh` receives an image and changes the color-space to HSV to apply an upper and lower threshold.
+```
+def rocks_thresh(img):
+    lower_yellow = np.array([14,100,100])
+    upper_yellow = np.array([34,255,255])
+    
+    hsv = cv2.cvtColor(img, cv2.COLOR_RGB2HSV)
+    mask = cv2.inRange(hsv, lower_yellow, upper_yellow)
+    rocks_select = cv2.bitwise_and(img,img, mask= mask)
+    
+    rocks_select_bin = color_thresh(rocks_select, rgb_thresh=(5, 5, 5))
+    
+    return rocks_select_bin
+```
+With provided data:
 ![alt text][image5]
+With recorded data:
 ![alt text][image6]
 
 #### 1. Populate the `process_image()` function with the appropriate analysis steps to map pixels identifying navigable terrain, obstacles and rock samples into a worldmap.  Run `process_image()` on your test data using the `moviepy` functions provided to create video output of your result. 
