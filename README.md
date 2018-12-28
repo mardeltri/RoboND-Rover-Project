@@ -241,10 +241,20 @@ towards the sample rock until it reaches it. In case it get stuck, unsticking mo
 sample rock and continues mapping in forward mode. In case the rover is stuck, it turns right 15 degrees and tries to go forward again. It repeats this procedure until it is unstuck.
 
 ##### Results
-![Results_Rover_60p_85f][image9]
+As can be seen the rover is able to pick up sample rocks and to map more than 60% of the terrain. During simulations, the rover has been able to get unstuck with the implemented 
+procedure. Sometimes, it doesn't pick up the sample rock the first time it sees it, however it usually picks it up when it goes back.
+
 ![Results_Rover_70p_87f_337s][image10]
 ![Results_Rover_94p_83f_950s][image11]
+
 ##### Improvements
+I would have liked to improve the way the rover detects the sample rocks given that, as mentioned previously, sometimes it detects them but it is not able to pick the up the first time.
+I think that two methods could be integrated: the one it is used here, and another one, that in case it does not pick the rock the first time, it makes the rover turn until it sees 
+the sample rock, and, when oriented, try again to pick it up. Indeed, the first method that I implemented to pick up sample rocks consisted in: stopping the rover, turning it towards the sample
+rock and going foward until it reached the sample rock. However, this method failed because sometimes it did not reach the sample. 
+
+Furthermore, I would have liked to implement the last step to achieve the starting point with the sample rocks. I think that is will be possible by commanding a yaw angle which makes 
+the rover achieves the starting point. This angle should be warped with the possible navigable angles.
 
 
 
