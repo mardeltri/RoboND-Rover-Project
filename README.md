@@ -145,7 +145,7 @@ several functions have been developed in order to control the rover and to check
 ##### Functions
 First, functions will be addressed in order to understand the modes inputs and outputs later.
 + Control laws. Two control laws have been implemented in order to command velocity and orientation.
-	+ *Velocity control* `control_vel(Rover,refvel)` Defining a velocity control helps to achieve faster movements given that the rover will try to reach an specific velocity with the whole throttle range. 
+	+ **Velocity control** `control_vel(Rover,refvel)` Defining a velocity control helps to achieve faster movements given that the rover will try to reach an specific velocity with the whole throttle range. 
 	This controller is a PI with a saturation in the integral term when the control signal (throttle) is saturated (-1,1). Negative throttle values have been considered to slow
 	down the rover when needed.
 	```
@@ -159,13 +159,21 @@ First, functions will be addressed in order to understand the modes inputs and o
 		
 		return Rover
 	```
-	+ *Orientation control* `control_yaw(Rover)` This orientation controller is used when the rover is stuck. As it will be explained later, when the rover is stuck a new orientation will be
-	set as reference and in that position the rover will try to go forward. This controller consists in a simple proportional controller.
-+ Checking if the rover is stuck or in a looping.
-	+ *Checking sticking* `check_sticking(Rover)`. This function checks the rover velocity during a certain period of time. If it is lower than the threshold the rover is considered to be
-	stuck and the unsticking mode is set.
+	+ **Orientation control** `control_yaw(Rover)` This orientation controller is used when the rover is stuck. As it will be explained later, when the rover is stuck a new orientation will be
+	set as reference and, in that position, the rover will try to go forward. This controller consists in a simple proportional controller.
 	```
-	# This function checks if the rover is stuck
+	def control_yaw(Rover):
+		ctrl_steer = Rover.Kp_yaw*wrap_angle_180(Rover.yawref - Rover.nyaw)
+		Rover.steer = np.clip(ctrl_steer,-15,15)
+		return Rover
+	```
++ Checking if the rover is stuck or in a looping.
+	+ **Checking sticking** `check_sticking(Rover)`. This function checks the rover velocity during a certain period of time. If it is lower than the threshold, the rover is considered to be
+	stuck and the unsticking mode is set. In addition, this function computes the orientation reference (`yawref`) which later will use the orientation controller. As it can be seen, the rover 
+	always turns in the same direction and it does not depend on the detected navigable terrain. This last case was programmedbut it did not provide good results given that, 
+	when the rover is stuck in the rocks, the navigable direction does not correspond neccesarily with the direction to escape from that place.
+
+	```
 	def check_sticking(Rover):
 		# Check for collision
 		total_time_stopped = 0
@@ -179,13 +187,12 @@ First, functions will be addressed in order to understand the modes inputs and o
 			print('Rover stuck')
 			Rover.time_stopped = 0 
 			Rover.yawref = wrap_angle_180(Rover.nyaw - Rover.unstick_angle) 
-			#print(total_time_stopped)
 			Rover.mode = 'unsticking'
 		return Rover
 		```
-	+ *Checking looping* `check_looping(Rover)`
+	+ **Checking looping** `check_looping(Rover)`. The structure of this function is quite similar to the previous one, however, in this case, the yaw reference is computed
+	depending on the way that the rover is turning.
 	```
-	# This function checks if the rover is in a loop
 	def check_looping(Rover):
 		#Checking for looping
 		total_time_looping = 0
