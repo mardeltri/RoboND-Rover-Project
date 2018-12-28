@@ -107,7 +107,13 @@ Function `process_image()` carries out the procedures to map the terrain, this i
  * Apply the perspective transform
  * Apply color threshold to detect navigable and non-navigable terrain and rock samples
  * Convert thresholded image pixel values to rover-centric coords
- * Crop images in order to increase map fidelity
+ * Crop images in order to increase map fidelity. This action is carried out by the function `crop_xy(xpix, ypix, crop_value)` which simply crops the picture with the pixels closer to the rover.
+ ```
+ def crop_xy(xpix, ypix, crop_value):
+    ypix_crop = ypix[xpix<crop_value]
+    xpix_crop = xpix[xpix<crop_value]
+    return xpix_crop, ypix_crop
+ ```
  * Convert rover-centric values to world coords considering the rover position and orientation
  * Compute mean angle from navigable pixels.
  The following image shows the steps carry out.
@@ -117,9 +123,18 @@ Below a gif annimation which shows the video output has been included.
 
 ![alt text][image8] 
 ### Autonomous Navigation and Mapping
+In this section, how to achieve the autonomous navigation will be discussed.
+
+#### 1. Perception step
+This perception step is the first point related with autonomous navigation. Here the camera image is received and processed. The content is very similar to the previously
+mentioned `process_image()` function, thus, in this point the two main differences will be addressed.
+
+* 
+
+#### 2. Decision step
+#### 3. Autonomous mode, results and improvements
 
 #### 1. Fill in the `perception_step()` (at the bottom of the `perception.py` script) and `decision_step()` (in `decision.py`) functions in the autonomous mapping scripts and an explanation is provided in the writeup of how and why these functions were modified as they were.
-
 
 #### 2. Launching in autonomous mode your rover can navigate and map autonomously.  Explain your results and how you might improve them in your writeup.  
 
