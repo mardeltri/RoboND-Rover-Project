@@ -16,9 +16,9 @@ to detect these rocks and we will define an autonomous mode to collect them.
 [image6]: ./misc/rock_sample_detection_mb.png
 [image7]: ./misc/process_image.PNG 
 [image8]: ./misc/process_image.gif 
-[image9]: ./misc/rover_60p_85f.PNG 
-[image10]: ./misc/rover_70p_87f_337s.PNG 
-[image11]: ./misc/rover_94p_83f_950s.PNG
+[image9]: ./misc/rover_61p_89f_304s.PNG 
+[image10]: ./misc/rover_77p_86f_387s.PNG 
+[image11]: ./misc/rover_93p_86f_553s.PNG
 
 ## [Rubric](https://review.udacity.com/#!/rubrics/916/view) Points
 Here I will consider the rubric points individually and describe how I addressed each point in my implementation.  
@@ -225,6 +225,8 @@ This mode turns the rover if there is not enough navigable terrain and speed it 
 This mode is set when the rover detects	a sample rock. Here, an approaching velocity is imposed until the rover can take the sample rock. In this case, the steer angle is given
 by the mean rocks angle position computed (Rover.rocks_angles) by the perception step. When the sample rock is picked up the forward mode is set.
 
+Given that sometimes the rover detects the  sample rock and in the following frame it does not detect it, a timer has been implemented. Thus, the rover 
+
 ##### Unsticking mode
 This mode basically waits the rover to reach the orientation reference value imposed by `check_sticking`. To do so, this mode uses the function `control_yaw`. When the rover
 reaches the reference angle, the forward mode is set.
@@ -246,14 +248,16 @@ This results have been obtained with the following configuration: 30 FPS, screen
 As can be seen the rover is able to pick up sample rocks and to map more than 60% of the terrain. During simulations, the rover has been able to get unstuck with the implemented 
 procedure. Sometimes, it doesn't pick up the sample rock the first time it sees it, however it usually picks it up when it goes back.
 
-![Results_Rover_70p_87f_337s][image10]
-![Results_Rover_94p_83f_950s][image11]
-
+![Results_Rover_61p_89f_304s][image9]
+![Results_Rover_77p_86f_387s][image10]
+![Results_Rover_93p_86f_553s][image11]
 ##### Improvements
 I would have liked to improve the way the rover detects the sample rocks given that, as mentioned previously, sometimes it detects them but it is not able to pick the up the first time.
 I think that two methods could be integrated: the one it is used here, and another one, that in case it does not pick the rock the first time, it makes the rover turn until it sees 
 the sample rock, and, when oriented, try again to pick it up. Indeed, the first method that I implemented to pick up sample rocks consisted in: stopping the rover, turning it towards the sample
 rock and going foward until it reached the sample rock. However, this method failed because sometimes it did not reach the sample. 
+
+Also related with sample rocks, it is the fact that sometimes the rover confuses the wall with the rocks. Maybe this behaviour could be improved by adjusting the color thresholds in `rocks_thresh`.
 
 Furthermore, I would have liked to implement the last step to achieve the starting point with the sample rocks. I think that is will be possible by commanding a yaw angle which makes 
 the rover achieves the starting point. This angle should be warped with the possible navigable angles.

@@ -95,8 +95,8 @@ class RoverState():
         self.mode = 'forward' # Current mode (can be forward or stop)
         # Forward
         self.throttle_set = 0.5 # Throttle setting when accelerating
-        self.deviation = 12 # Deviation from navigable angle
-        self.vel_fwd = 2.5 # Velocity in forward mode [m/s]
+        self.deviation = 8 # Deviation from navigable angle
+        self.vel_fwd = 3 # Velocity in forward mode [m/s]
         # Unsticking
         self.unstick_angle = 25 # Angle to turn when unsticking
         self.stuck_steer_angle = 15 # Angle to detect looping
@@ -135,7 +135,7 @@ def telemetry(sid, data):
         fps = frame_counter
         frame_counter = 0
         second_counter = time.time()
-    #print("Current FPS: {}".format(fps))
+    print("Current FPS: {}".format(fps))
 
     if data:
         # Initialize / update Rover with current telemetry

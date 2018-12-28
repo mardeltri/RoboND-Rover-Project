@@ -88,7 +88,7 @@ def decision_step(Rover):
             Rover = check_sticking(Rover)
             Rover = check_looping(Rover)
         # Check for Rover.mode status
-        print(Rover.mode)
+        #print(Rover.mode)
         if Rover.mode == 'unsticking':
             # The rover is stuck
             Rover.throttle = 0
@@ -128,7 +128,6 @@ def decision_step(Rover):
                     Rover.prev_steer = Rover.steer
                 else:
                     Rover.steer = Rover.prev_steer
-                print(Rover.steer)
                 # Stay in this mode at least one second
                 total_time_approaching = 0
                 if Rover.time_approaching == 0:

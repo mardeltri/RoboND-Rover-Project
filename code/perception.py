@@ -35,8 +35,8 @@ def obstacle_thresh(img, mask, rgb_thresh=(160, 160, 160)):
     return obstacle_area
 
 def rocks_thresh(img):
-    lower_yellow = np.array([14,100,100])
-    upper_yellow = np.array([34,255,255])
+    lower_yellow = np.array([19,100,100])
+    upper_yellow = np.array([29,255,255])
     
     hsv = cv2.cvtColor(img, cv2.COLOR_RGB2HSV)
     mask = cv2.inRange(hsv, lower_yellow, upper_yellow)
@@ -194,7 +194,6 @@ def perception_step(Rover):
         Rover.sample_in_sight = True
     else:
         Rover.sample_in_sight = False
-    print(Rover.sample_in_sight)
     
     Rover = update_rocks(Rover)
     
