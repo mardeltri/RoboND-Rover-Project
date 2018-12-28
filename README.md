@@ -216,7 +216,18 @@ First, functions will be addressed in order to understand the modes inputs and o
 		return Rover
 	```
 ##### Forward mode
-In this 
+This mode moves the rover forward when there is enough navigable terrain. In this case, the rover tries to reach the forward velocity defined in the `Rover.vel_fwd` variable.
+If there is not enough navigable terrain, the rover mode `stop` is set.
+##### Stop mode
+This mode turns the rover if there is not enough navigable terrain and speed it up in case that there is. This mode has not been modified.
+
+##### Approaching mode
+This mode is set when the rover detects	a sample rock. Here, an approaching velocity is imposed until the rover can take the sample rock. In this case, the steer angle is given
+by the mean rocks angle position computed (Rover.rocks_angles) by the perception step. When the sample rock is picked up the forward mode is set.
+
+##### Unsticking mode
+This mode basically waits the rover to reach the orientation reference value imposed by `check_sticking`. To do so, this mode uses the function `control_yaw`. When the rover
+reaches the reference angle, the forward mode is set.
 
 
 #### 3. Autonomous mode, results and improvements
