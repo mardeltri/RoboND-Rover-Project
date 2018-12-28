@@ -241,6 +241,8 @@ towards the sample rock until it reaches it. In case it get stuck, unsticking mo
 sample rock and continues mapping in forward mode. In case the rover is stuck, it turns right 15 degrees and tries to go forward again. It repeats this procedure until it is unstuck.
 
 ##### Results
+This results have been obtained with the following configuration: 30 FPS, screen 1024x768 and graphics quality set to Good.
+
 As can be seen the rover is able to pick up sample rocks and to map more than 60% of the terrain. During simulations, the rover has been able to get unstuck with the implemented 
 procedure. Sometimes, it doesn't pick up the sample rock the first time it sees it, however it usually picks it up when it goes back.
 
