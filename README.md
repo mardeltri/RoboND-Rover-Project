@@ -3,7 +3,7 @@
 ### Project objective
 
 The main purpose of this project is to develop a program to move a Rover autonomously. First, we will focus on detecting navigable and non-navigable terrain. Later, we will
-program the algorithms to command the rover in order to map the navigable terrain. In addition, given that there are rock samples in the scenario, we will write a function
+program the algorithms to command the rover in order to map the navigable terrain. In addition, given that there are  sample rocks in the scenario, we will write a function
 to detect these rocks and we will define an autonomous mode to collect them.
 
 [//]: # (Image References)
@@ -33,7 +33,7 @@ Here I will consider the rubric points individually and describe how I addressed
 You're reading it!
 
 ### Notebook Analysis
-#### 1. Run the functions provided in the notebook on test images (first with the test data provided, next on data you have recorded). Add/modify functions to allow for color selection of obstacles and rock samples.
+#### 1. Run the functions provided in the notebook on test images (first with the test data provided, next on data you have recorded). Add/modify functions to allow for color selection of obstacles and sample rocks.
 In this section, how to detect navigable, non-navigable terrain and rock samples will be addressed. 
 
 The first step is to apply the perspective transform in order to have a top-down view from the scenario. The following function carries out this task. A new output variable, mask, was
@@ -81,7 +81,7 @@ With provided data:
 With recorded data:
 ![alt text][image4]
 
-Rock samples are detected applying a filter to find yellow colors. Function `color_thresh` receives an image and changes the color-space to HSV to apply an upper and lower threshold.
+Sample rocks are detected applying a filter to find yellow colors. Function `color_thresh` receives an image and changes the color-space to HSV to apply an upper and lower threshold.
 ```
 def rocks_thresh(img):
     lower_yellow = np.array([14,100,100])
@@ -100,14 +100,15 @@ With provided data:
 With recorded data:
 ![alt text][image6]
 
-#### 2. Populate the `process_image()` function with the appropriate analysis steps to map pixels identifying navigable terrain, obstacles and rock samples into a worldmap.  Run `process_image()` on your test data using the `moviepy` functions provided to create video output of your result. 
+#### 2. Populate the `process_image()` function with the appropriate analysis steps to map pixels identifying navigable terrain, obstacles and sample rocks into a worldmap.  Run `process_image()` on your test data using the `moviepy` functions provided to create video output of your result. 
 Function `process_image()` carries out the procedures to map the terrain, this is,
- detect navigable, non-navigable terrain and rock samples in rover centric coordinates
+ detect navigable, non-navigable terrain and sample rocks in rover centric coordinates
  and transform them to worldmap coordinates. The following steps are perform:
  * Apply the perspective transform
- * Apply color threshold to detect navigable and non-navigable terrain and rock samples
+ * Apply color threshold to detect navigable and non-navigable terrain and  sample rocks
  * Convert thresholded image pixel values to rover-centric coords
- * Crop images in order to increase map fidelity. This action is carried out by the function `crop_xy(xpix, ypix, crop_value)` which simply crops the picture with the pixels closer to the rover.
+ * Crop images in order to increase map fidelity. This action is carried out by the function `crop_xy(xpix, ypix, crop_value)` 
+ which simply crops the picture with the pixels closer to the rover.
  ```
  def crop_xy(xpix, ypix, crop_value):
     ypix_crop = ypix[xpix<crop_value]
@@ -116,6 +117,7 @@ Function `process_image()` carries out the procedures to map the terrain, this i
  ```
  * Convert rover-centric values to world coords considering the rover position and orientation
  * Compute mean angle from navigable pixels.
+ 
  The following image shows the steps carry out.
 ![alt text][image7]
 
@@ -129,9 +131,19 @@ In this section, how to achieve the autonomous navigation will be discussed.
 This perception step is the first point related with autonomous navigation. Here the camera image is received and processed. The content is very similar to the previously
 mentioned `process_image()` function, thus, in this point the two main differences will be addressed.
 
-* 
+* Check if there is any sample rock detected in the current camera image. This checking will be saved in the variable `Rover.sample_in_sight` which will be useful to define
+the rover mode. It worths mention that this checking is carried out in the orginal picture (non-cropped). Thus, the cropped one is used for mapping and the original is used
+ for detecting.
+* Before computing the mapping images, it is check if the roll and pich angles are below a threshold, in this case 2 degrees. Thus, images taken with these angles are ruled
+out to improve map fidelity. Given that the angle is between 0 and 360 degrees, a function named `wrap_angle_180(angle)` has been defined in `supporting_functions.py` to wrap
+the angle between -180 and 180 degrees. Thus, we only have to check if the absolute wraped angle (`npich` or `nroll`) is below 2 degrees.
 
 #### 2. Decision step
+In this function it is defined what to do depending on the images taken by the rover. Four different modes will be considered: forward, stop, approaching and unsticking. In addition,
+several functions have been developed in order to control the rover and to check if it is stuck or in a looping (continuosly turning). 
+
+##### Modes
+
 #### 3. Autonomous mode, results and improvements
 
 #### 1. Fill in the `perception_step()` (at the bottom of the `perception.py` script) and `decision_step()` (in `decision.py`) functions in the autonomous mapping scripts and an explanation is provided in the writeup of how and why these functions were modified as they were.
