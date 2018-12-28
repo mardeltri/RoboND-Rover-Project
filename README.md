@@ -159,7 +159,7 @@ First, functions will be addressed in order to understand the modes inputs and o
 		
 		return Rover
 	```
-	+ **Orientation control** `control_yaw(Rover)` This orientation controller is used when the rover is stuck. As it will be explained later, when the rover is stuck a new orientation will be
+	+ **Orientation control** `control_yaw(Rover)` This orientation controller is used when the rover is stuck. As it will be explained later, when the rover is stuck, a new orientation will be
 	set as reference and, in that position, the rover will try to go forward. This controller consists in a simple proportional controller.
 	```
 	def control_yaw(Rover):
@@ -190,6 +190,7 @@ First, functions will be addressed in order to understand the modes inputs and o
 			Rover.mode = 'unsticking'
 		return Rover
 		```
+		
 	+ **Checking looping** `check_looping(Rover)`. The structure of this function is quite similar to the previous one, however, in this case, the yaw reference is computed
 	depending on the way that the rover is turning.
 	```
