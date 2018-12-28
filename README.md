@@ -16,11 +16,9 @@ to detect these rocks and we will define an autonomous mode to collect them.
 [image6]: ./misc/rock_sample_detection_mb.png
 [image7]: ./misc/process_image.PNG 
 [image8]: ./misc/process_image.gif 
-
-[image9]: ./misc/navigable_terrain.png 
-[image10]: ./misc/navigable_terrain.png 
-[image11]: ./misc/navigable_terrain.png 
-[image12]: ./misc/navigable_terrain.png 
+[image9]: ./misc/rover_60p_85f.PNG 
+[image10]: ./misc/rover_70p_87f_337s.PNG 
+[image11]: ./misc/rover_94p_83f_950s.PNG
 
 ## [Rubric](https://review.udacity.com/#!/rubrics/916/view) Points
 Here I will consider the rubric points individually and describe how I addressed each point in my implementation.  
@@ -50,10 +48,10 @@ def perspect_transform(img, src, dst):
 ```
 
 With provided data:
-![alt text][image1]
+![Perspective transform][image1]
 
 With recorded data:
-![alt text][image2]
+![Perspective transform with recorded data][image2]
 
 With those images we can apply a filter to detect navigable and non-navigable terrain. Threshold of RGB > 160 
 is found to perform well in terms of determing navigable terrain. A new function has been defined to detect non-navigable terrain. The method used here is similar to that in 
@@ -77,9 +75,9 @@ def obstacle_thresh(img, mask, rgb_thresh=(160, 160, 160)):
     return obstacle_area
 ```
 With provided data:
-![alt text][image3]
+![Navigable terrain][image3]
 With recorded data:
-![alt text][image4]
+![Navigable terrain with recorded data][image4]
 
 Sample rocks are detected applying a filter to find yellow colors. Function `color_thresh` receives an image and changes the color-space to HSV to apply an upper and lower threshold.
 ```
@@ -96,9 +94,9 @@ def rocks_thresh(img):
     return rocks_select_bin
 ```
 With provided data:
-![alt text][image5]
+![Sample rock detection][image5]
 With recorded data:
-![alt text][image6]
+![Sample rock detection with recorded data][image6]
 
 #### 2. Populate the `process_image()` function with the appropriate analysis steps to map pixels identifying navigable terrain, obstacles and sample rocks into a worldmap.  Run `process_image()` on your test data using the `moviepy` functions provided to create video output of your result. 
 Function `process_image()` carries out the procedures to map the terrain, this is,
@@ -119,11 +117,11 @@ Function `process_image()` carries out the procedures to map the terrain, this i
  * Compute mean angle from navigable pixels.
  
  The following image shows the steps carry out.
-![alt text][image7]
+![Process image][image7]
 
 Below a gif annimation which shows the video output has been included.
 
-![alt text][image8] 
+![Process image GIF][image8] 
 ### Autonomous Navigation and Mapping
 In this section, how to achieve the autonomous navigation will be discussed.
 
@@ -217,7 +215,9 @@ First, functions will be addressed in order to understand the modes inputs and o
 	```
 ##### Forward mode
 This mode moves the rover forward when there is enough navigable terrain. In this case, the rover tries to reach the forward velocity defined in the `Rover.vel_fwd` variable.
-If there is not enough navigable terrain, the rover mode `stop` is set.
+If there is not enough navigable terrain, the rover mode `stop` is set. It must be highlighted that the rover steer angle has been modified in order to deviate lightly the rover
+towards the left wall. To do so, an offset has been added to the navigation angle.
+
 ##### Stop mode
 This mode turns the rover if there is not enough navigable terrain and speed it up in case that there is. This mode has not been modified.
 
@@ -232,15 +232,19 @@ reaches the reference angle, the forward mode is set.
 
 #### 3. Autonomous mode, results and improvements
 
-#### 1. Fill in the `perception_step()` (at the bottom of the `perception.py` script) and `decision_step()` (in `decision.py`) functions in the autonomous mapping scripts and an explanation is provided in the writeup of how and why these functions were modified as they were.
+In this section, first, the rover state machine will be discussed. Later, results will be showed and finally some improvements will be suggested.
 
-#### 2. Launching in autonomous mode your rover can navigate and map autonomously.  Explain your results and how you might improve them in your writeup.  
+##### Rover state machine
 
-**Note: running the simulator with different choices of resolution and graphics quality may produce different results, particularly on different machines!  Make a note of your simulator settings (resolution and graphics quality set on launch) and frames per second (FPS output to terminal by `drive_rover.py`) in your writeup when you submit the project so your reviewer can reproduce your results.**
+The rover starts in forward mode and go through the scenario close to the left wall. When it detects a sample rock the approaching mode is set, so the rover slows down and turns
+towards the sample rock until it reaches it. In case it get stuck, unsticking mode is set and the forward mode is activated again. In satisfactory case, the rover picks up the
+sample rock and continues mapping in forward mode. In case the rover is stuck, it turns right 15 degrees and tries to go forward again. It repeats this procedure until it is unstuck.
 
-Here I'll talk about the approach I took, what techniques I used, what worked and why, where the pipeline might fail and how I might improve it if I were going to pursue this project further.  
+##### Results
+![Results_Rover_60p_85f][image9]
+![Results_Rover_70p_87f_337s][image10]
+![Results_Rover_94p_83f_950s][image11]
+##### Improvements
 
 
-
-![alt text][image3]
 
