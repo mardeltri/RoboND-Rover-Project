@@ -4,16 +4,26 @@
 
 The main purpose of this project is to develop a program to move a Rover autonomously. First, we will focus on detecting navigable and non-navigable terrain. Later, we will
 program the algorithms to command the rover in order to map the navigable terrain. In addition, given that there are rock samples in the scenario, we will write a function
-to detect these rocks and a program to collect them.
+to detect these rocks and we will define an autonomous mode to collect them.
 
 [//]: # (Image References)
 
-[image1]: ./misc/rover_image.jpg
-[image2]: ./calibration_images/example_grid1.jpg
-[image3]: ./calibration_images/example_rock1.jpg 
+[image1]: ./misc/perspective_transform.png
+[image2]: ./misc/perspective_transform_mb.png
+[image3]: ./misc/navigable_terrain.png 
+[image4]: ./misc/navigable_terrain_mb.png 
+[image5]: ./misc/rock_sample_detection.png 
+[image6]: ./misc/rock_sample_detection_mb.png
+
+[image7]: ./misc/navigable_terrain.png 
+[image8]: ./misc/navigable_terrain.png 
+[image9]: ./misc/navigable_terrain.png 
+[image10]: ./misc/navigable_terrain.png 
+[image11]: ./misc/navigable_terrain.png 
+[image12]: ./misc/navigable_terrain.png 
 
 ## [Rubric](https://review.udacity.com/#!/rubrics/916/view) Points
-### Here I will consider the rubric points individually and describe how I addressed each point in my implementation.  
+Here I will consider the rubric points individually and describe how I addressed each point in my implementation.  
 
 ---
 ### Writeup / README
@@ -24,12 +34,33 @@ You're reading it!
 
 ### Notebook Analysis
 #### 1. Run the functions provided in the notebook on test images (first with the test data provided, next on data you have recorded). Add/modify functions to allow for color selection of obstacles and rock samples.
-Here is an example of how to include an image in your writeup.
+In this section, how to detect navigable, non-navigable terrain and rock samples will be addressed. 
 
+The first step is to apply the perspective transform in order to have a top-down view from the scenario. The following function carries out this task. A new output variable, mask, was
+added in order to deal with images wich have been transformed.
+
+```
+def perspect_transform(img, src, dst):
+           
+    M = cv2.getPerspectiveTransform(src, dst)
+    warped = cv2.warpPerspective(img, M, (img.shape[1], img.shape[0]))# keep same size as input image
+    mask = cv2.warpPerspective(np.ones_like(img[:,:,0]), M, (img.shape[1], img.shape[0]))
+    
+    return warped, mask
+```
+
+With the provided data:
 ![alt text][image1]
+With recorded data:
+![alt text][image2]
+
+With those images we can apply a filter to detect navigable and non-navigable terrain and rock samples.
+![alt text][image3]
+![alt text][image4]
+![alt text][image5]
+![alt text][image6]
 
 #### 1. Populate the `process_image()` function with the appropriate analysis steps to map pixels identifying navigable terrain, obstacles and rock samples into a worldmap.  Run `process_image()` on your test data using the `moviepy` functions provided to create video output of your result. 
-And another! 
 
 ![alt text][image2]
 ### Autonomous Navigation and Mapping
