@@ -142,7 +142,14 @@ the angle between -180 and 180 degrees. Thus, we only have to check if the absol
 In this function it is defined what to do depending on the images taken by the rover. Four different modes will be considered: forward, stop, approaching and unsticking. In addition,
 several functions have been developed in order to control the rover and to check if it is stuck or in a looping (continuosly turning). 
 
-##### Modes
+##### Functions
+First, functions will be addressed in order to understand the modes inputs and outputs later.
+* Control laws. Two control laws have been implemented in order to command velocity and orientation. 
+**Defining a velocity control helps to achieve faster movements given that the rover
+will try to reach an specific velocity with the whole throttle range. 
+##### Forward mode
+In this 
+
 
 #### 3. Autonomous mode, results and improvements
 
