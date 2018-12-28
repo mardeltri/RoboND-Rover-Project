@@ -18,7 +18,7 @@ import matplotlib.image as mpimg
 import time
 
 # Import functions for perception and decision making
-from perception_v2 import perception_step
+from perception import perception_step
 from decision import decision_step
 from supporting_functions import update_rover, create_output_images
 # Initialize socketio server and Flask application 
@@ -40,16 +40,21 @@ class RoverState():
     def __init__(self):
         self.start_time = None # To record the start time of navigation
         self.total_time = None # To record total duration of naviagation
+        # Intial times
         self.time_stopped = 0 # Time stoped in foward mode
         self.time_looping = 0 # Time looping in foward mode
+        self.time_approaching = 0 # Time blocking approaching
+        # Maximum times
         self.max_time_stopped = 1 # Maximum stopped time in seconds
-        self.max_time_looping = 3 # Maximum stopped time in seconds
+        self.max_time_looping = 5 # Maximum looping time in seconds
+        self.max_time_approaching = 0.5 # Maximum approaching time in seconds
         self.img = None # Current camera image
         self.pos = None # Current position (x, y)
         self.yaw = None # Current yaw angle
-        self.yawref = 0 # Current yaw angle
         self.pitch = None # Current pitch angle
         self.roll = None # Current roll angle
+        self.max_roll = 2 # Maximum roll angle to consider valid mapping data
+        self.max_pitch = 2 # Maximum pitch angle to consider valid mapping data
         self.vel = None # Current velocity
         self.steer = 0 # Current steering angle
         self.throttle = 0 # Current throttle value
@@ -57,8 +62,6 @@ class RoverState():
         self.nav_angles = None # Angles of navigable terrain pixels
         self.nav_dists = None # Distances of navigable terrain pixels
         self.ground_truth = ground_truth_3d # Ground truth worldmap
-        self.mode = 'forward' # Current mode (can be forward or stop)
-        self.throttle_set = 0.7 # Throttle setting when accelerating
         self.brake_set = 10 # Brake setting when braking
         # The stop_forward and go_forward fields below represent total count
         # of navigable terrain pixels.  This is a very crude form of knowing
@@ -66,7 +69,7 @@ class RoverState():
         # get creative in adding new fields or modifying these!
         self.stop_forward = 50 # Threshold to initiate stopping
         self.go_forward = 500 # Threshold to go forward again
-        self.max_vel = 2 # Maximum velocity (meters/second)
+        self.max_vel = 2.5 # Maximum velocity (meters/second)
         # Image output from perception step
         # Update this image to display your intermediate analysis steps
         # on screen in autonomous mode
@@ -75,6 +78,8 @@ class RoverState():
         # Update this image with the positions of navigable terrain
         # obstacles and rock samples
         self.worldmap = np.zeros((200, 200, 3), dtype=np.float) 
+        # Samples
+        self.rocks_angles = None # Angles of rock samples pixels
         self.samples_pos = None # To store the actual sample positions
         self.samples_pos_detected = np.zeros((6, 2), dtype=np.float) # To store detected samples
         self.samples_to_find = 0 # To store the initial count of samples
@@ -84,12 +89,29 @@ class RoverState():
         self.near_sample = 0 # Will be set to telemetry value data["near_sample"]
         self.picking_up = 0 # Will be set to telemetry value data["picking_up"]
         self.send_pickup = False # Set to True to trigger rock pickup
-        self.Kp_yaw = 0.5
-        self.flag_print = 0
-        self.deviation = 8
-        self.unstuck_angle = 15
-        self.stuck_steer_angle = 15
+        self.flag_print = 0 # Flag to print values at a certain rate
         
+        # Modes parameters
+        self.mode = 'forward' # Current mode (can be forward or stop)
+        # Forward
+        self.throttle_set = 0.5 # Throttle setting when accelerating
+        self.deviation = 12 # Deviation from navigable angle
+        self.vel_fwd = 2.5 # Velocity in forward mode [m/s]
+        # Unsticking
+        self.unstick_angle = 25 # Angle to turn when unsticking
+        self.stuck_steer_angle = 15 # Angle to detect looping
+        # Approaching
+        self.sample_in_sight = False # Flag to check if there is a sample rock in sight
+        self.vel_apch = 0.5 # Velocity in approaching mode [m/s]
+        self.throttle_apch = 0.2 # Throttle value when approaching to a sample rock
+        self.prev_steer = 0 # Previous steer angle
+        # Yaw controller
+        self.yawref = 0 # Yaw reference angle
+        self.Kp_yaw = 0.5 # Yaw controller proportional gain
+        # Velocity controller
+        self.Kp_vel = 0.7 # Velocity controller proportional gain 
+        self.Ki_vel = 0.08 # Velocity controller integral gain
+        self.int_error_vel = 0 # Velocity controller integral term
 # Initialize our rover 
 Rover = RoverState()
 
@@ -105,7 +127,7 @@ fps = None
 @sio.on('telemetry')
 def telemetry(sid, data):
 
-    global frame_counter, second_counter, fps
+    global frame_counter, second_counter, fps, Rover
     frame_counter+=1
     # Do a rough calculation of frames per second (FPS)
     Rover.flag_print = (time.time() - second_counter) > 1
@@ -116,7 +138,6 @@ def telemetry(sid, data):
     #print("Current FPS: {}".format(fps))
 
     if data:
-        global Rover
         # Initialize / update Rover with current telemetry
         Rover, image = update_rover(Rover, data)
 
