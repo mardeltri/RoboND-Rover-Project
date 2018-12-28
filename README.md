@@ -144,8 +144,8 @@ several functions have been developed in order to control the rover and to check
 
 ##### Functions
 First, functions will be addressed in order to understand the modes inputs and outputs later.
-* Control laws. Two control laws have been implemented in order to command velocity and orientation. 
-**Defining a velocity control helps to achieve faster movements given that the rover
++ Control laws. Two control laws have been implemented in order to command velocity and orientation.
+	+ Defining a velocity control helps to achieve faster movements given that the rover
 will try to reach an specific velocity with the whole throttle range. 
 ##### Forward mode
 In this 
