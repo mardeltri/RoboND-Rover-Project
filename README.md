@@ -14,7 +14,7 @@ to detect these rocks and we will define an autonomous mode to collect them.
 [image4]: ./misc/navigable_terrain_mb.png 
 [image5]: ./misc/rock_sample_detection.png 
 [image6]: ./misc/rock_sample_detection_mb.png
-[image7]: ./misc/process_image.png 
+[image7]: ./misc/process_image.PNG 
 [image8]: ./misc/process_image.gif 
 
 [image9]: ./misc/navigable_terrain.png 
