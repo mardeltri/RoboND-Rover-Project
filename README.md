@@ -113,7 +113,7 @@ Function `process_image()` carries out the procedures to map the terrain, this i
  The following image shows the steps carry out.
 ![alt text][image7]
 
-Below a gif annimation which shows the video output has been included.fdsa
+Below a gif annimation which shows the video output has been included.
 ![alt text][image8]
 
 ### Autonomous Navigation and Mapping
