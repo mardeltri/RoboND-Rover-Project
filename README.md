@@ -115,7 +115,7 @@ Function `process_image()` carries out the procedures to map the terrain, this i
 
 Below a gif annimation which shows the video output has been included.
 
-[![alt text][image8]][./misc/test_mapping.mp4 ] 
+![alt text][image8] 
 ### Autonomous Navigation and Mapping
 
 #### 1. Fill in the `perception_step()` (at the bottom of the `perception.py` script) and `decision_step()` (in `decision.py`) functions in the autonomous mapping scripts and an explanation is provided in the writeup of how and why these functions were modified as they were.
