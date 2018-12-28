@@ -145,8 +145,68 @@ several functions have been developed in order to control the rover and to check
 ##### Functions
 First, functions will be addressed in order to understand the modes inputs and outputs later.
 + Control laws. Two control laws have been implemented in order to command velocity and orientation.
-	+ Defining a velocity control helps to achieve faster movements given that the rover
-will try to reach an specific velocity with the whole throttle range. 
+	+ *Velocity control* `control_vel(Rover,refvel)` Defining a velocity control helps to achieve faster movements given that the rover will try to reach an specific velocity with the whole throttle range. 
+	This controller is a PI with a saturation in the integral term when the control signal (throttle) is saturated (-1,1). Negative throttle values have been considered to slow
+	down the rover when needed.
+	```
+	def control_vel(Rover,refvel):
+		error = (refvel - Rover.vel)
+		ctrl_throttle = Rover.Kp_vel*error + Rover.Ki_vel *1/25* Rover.int_error_vel
+		if abs(ctrl_throttle)<1:
+			Rover.int_error_vel = Rover.int_error_vel + error
+
+		Rover.throttle = np.clip(ctrl_throttle,-1,1)
+		
+		return Rover
+	```
+	+ *Orientation control* `control_yaw(Rover)` This orientation controller is used when the rover is stuck. As it will be explained later, when the rover is stuck a new orientation will be
+	set as reference and in that position the rover will try to go forward. This controller consists in a simple proportional controller.
++ Checking if the rover is stuck or in a looping.
+	+ *Checking sticking* `check_sticking(Rover)`. This function checks the rover velocity during a certain period of time. If it is lower than the threshold the rover is considered to be
+	stuck and the unsticking mode is set.
+	```
+	# This function checks if the rover is stuck
+	def check_sticking(Rover):
+		# Check for collision
+		total_time_stopped = 0
+		if abs(Rover.vel)<0.2 and (Rover.time_stopped == 0):
+			Rover.time_stopped = time.time()
+		elif abs(Rover.vel)<0.2 and (Rover.time_stopped != 0):
+			total_time_stopped = time.time()-Rover.time_stopped
+		else:
+			Rover.time_stopped = 0
+		if total_time_stopped>Rover.max_time_stopped:
+			print('Rover stuck')
+			Rover.time_stopped = 0 
+			Rover.yawref = wrap_angle_180(Rover.nyaw - Rover.unstick_angle) 
+			#print(total_time_stopped)
+			Rover.mode = 'unsticking'
+		return Rover
+		```
+	+ *Checking looping* `check_looping(Rover)`
+	```
+	# This function checks if the rover is in a loop
+	def check_looping(Rover):
+		#Checking for looping
+		total_time_looping = 0
+		flag_angle = abs(abs(Rover.steer)-Rover.stuck_steer_angle)<0.5
+		flag_speed = abs(Rover.vel)>0.5
+		if flag_angle and flag_speed and (Rover.time_looping == 0):
+			Rover.time_looping = time.time()
+		elif flag_angle and flag_speed and (Rover.time_looping != 0):
+			total_time_looping = time.time()-Rover.time_looping
+		else:
+			Rover.time_looping = 0
+		if total_time_looping>Rover.max_time_looping:
+			print('Rover in a loop')
+			Rover.time_looping = 0
+			if Rover.steer>0:
+				Rover.yawref = wrap_angle_180(Rover.nyaw - Rover.unstick_angle)
+			else:
+				Rover.yawref = wrap_angle_180(Rover.nyaw + Rover.unstick_angle)
+			Rover.mode = 'unsticking'
+		return Rover
+	```
 ##### Forward mode
 In this 
 
