@@ -14,9 +14,9 @@ to detect these rocks and we will define an autonomous mode to collect them.
 [image4]: ./misc/navigable_terrain_mb.png 
 [image5]: ./misc/rock_sample_detection.png 
 [image6]: ./misc/rock_sample_detection_mb.png
+[image7]: ./misc/process_image.png 
+[image8]: ./misc/process_image.gif 
 
-[image7]: ./misc/navigable_terrain.png 
-[image8]: ./misc/navigable_terrain.png 
 [image9]: ./misc/navigable_terrain.png 
 [image10]: ./misc/navigable_terrain.png 
 [image11]: ./misc/navigable_terrain.png 
@@ -57,7 +57,7 @@ With recorded data:
 
 With those images we can apply a filter to detect navigable and non-navigable terrain. Threshold of RGB > 160 
 is found to perform well in terms of determing navigable terrain. A new function has been defined to detect non-navigable terrain. The method used here is similar to that in 
-`color_thresh` but we set zero values when the pixel are above all three threshold values. In addition, the mask previously mentioned must be applied given that the perspective
+`color_thresh` but zero values are set when the pixel is above all three threshold values. In addition, the mask previously mentioned must be applied given that the perspective
 view does not extend to the whole image.
 ```
 def obstacle_thresh(img, mask, rgb_thresh=(160, 160, 160)):
@@ -100,9 +100,19 @@ With provided data:
 With recorded data:
 ![alt text][image6]
 
-#### 1. Populate the `process_image()` function with the appropriate analysis steps to map pixels identifying navigable terrain, obstacles and rock samples into a worldmap.  Run `process_image()` on your test data using the `moviepy` functions provided to create video output of your result. 
-
-![alt text][image2]
+#### 2. Populate the `process_image()` function with the appropriate analysis steps to map pixels identifying navigable terrain, obstacles and rock samples into a worldmap.  Run `process_image()` on your test data using the `moviepy` functions provided to create video output of your result. 
+Function `process_image()` carries out the procedures to map the terrain, this is,
+ detect navigable, non-navigable terrain and rock samples in rover centric coordinates
+ and transform them to worldmap coordinates. The following steps are perform:
+ * Apply the perspective transform
+ * Apply color threshold to detect navigable and non-navigable terrain and rock samples
+ * Convert thresholded image pixel values to rover-centric coords
+ * Crop images in order to increase map fidelity
+ * Convert rover-centric values to world coords considering the rover position and orientation
+ * Compute mean angle from navigable pixels.
+ The following image shows the steps carry out.
+![alt text][image7]
+![alt text][image8]
 ### Autonomous Navigation and Mapping
 
 #### 1. Fill in the `perception_step()` (at the bottom of the `perception.py` script) and `decision_step()` (in `decision.py`) functions in the autonomous mapping scripts and an explanation is provided in the writeup of how and why these functions were modified as they were.
